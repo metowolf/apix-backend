@@ -29,7 +29,6 @@ dependencies {
 	implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.1")
 	implementation("mysql:mysql-connector-java:8.0.18")
 	implementation("com.auth0:java-jwt:3.8.3")
-	implementation("com.alibaba:fastjson:1.2.62")
 }
 
 tasks.withType<KotlinCompile> {

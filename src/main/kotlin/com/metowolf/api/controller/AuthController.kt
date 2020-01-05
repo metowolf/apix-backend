@@ -1,6 +1,6 @@
 package com.metowolf.api.controller
 
-import com.alibaba.fastjson.JSONObject
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.metowolf.api.dao.UserDao
 import com.metowolf.api.entity.Response
 import com.metowolf.api.entity.User
@@ -31,11 +31,11 @@ class AuthController: BaseController() {
                 return error("密码错误")
             }
             val info = userDao.get(username) ?: return error("获取用户信息失败")
-            val result = JSONObject()
+            val result = ObjectMapper().createObjectNode()
             result.put("id", info.id)
             result.put("username", info.username)
             result.put("email", info.email)
-            val token = authService.sign(result.toJSONString())
+            val token = authService.sign(result.toString())
             return success(token)
         } catch (e: Exception) {
             logger.error("获取令牌失败", e)
@@ -43,7 +43,7 @@ class AuthController: BaseController() {
         }
     }
 
-    @RequestMapping(value = ["/me"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/me"], method = [RequestMethod.GET])
     fun renewToken(@RequestAttribute("username") username: String): Response {
         try {
             val info = userDao.get(username)

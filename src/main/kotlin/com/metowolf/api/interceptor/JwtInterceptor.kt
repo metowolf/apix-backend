@@ -1,6 +1,6 @@
 package com.metowolf.api.interceptor
 
-import com.alibaba.fastjson.JSON
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.metowolf.api.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.servlet.HandlerInterceptor
@@ -19,9 +19,10 @@ class JwtInterceptor: HandlerInterceptor {
             val newToken = authService.autoRequire(token)
             response.addHeader("Authorization", newToken)
             val jwt = authService.verify(newToken)
-            val json = JSON.parseObject(jwt!!.subject)
-            request.setAttribute("username", json.get("username"))
-            request.setAttribute("email", json.get("email"))
+            val objectMapper = ObjectMapper()
+            val nodeTree = objectMapper.readTree(jwt!!.subject)
+            request.setAttribute("username", nodeTree.path("username").asText())
+            request.setAttribute("email", nodeTree.path("email").asText())
             return true
         } catch (e: Exception) {
             e.printStackTrace()
